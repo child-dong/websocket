@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<link rel="stylesheet" href="">
+	<style>
+		#box{
+			float: left;
+			height: 500px;
+			width: 400px;
+			border: 1px solid red;
+		}
+		#box1{
+			float: right;
+			height: 500px;
+			width: 400px;
+			border: 1px solid red;
+		}
+	</style>
+</head>
+<body>
+	<input type="text" id="inp">
+	<input type="submit" id="click">
+	<div id="box"></div>
+	<div id="box1"></div>
+	
+	<script>
+	  var name = prompt("请输入你的名字")
+	  if(name == ""){
+	  	name = "匿名"
+	  }
+		var btn = document.getElementById('click')
+		var ipt = document.getElementById('inp')
+		var oBox = document.getElementById('box');
+		var oBox1 = document.getElementById('box1');
+
+
+		// var sock = new WebSocket("ws://192.168.78.18:5001");	
+		var sock = new WebSocket("ws://localhost:5001");	
+
+		sock.onopen = function(){
+			console.log('open');
+			// sock.send('hello')
+			sock.send(JSON.stringify({
+				type: "name",
+				data: name
+			}))
+		}
+
+		sock.onmessage = function(e){
+			json = JSON.parse(e.data)
+			// console.log("send");	
+			// console.log(e.data);
+			oBox1.innerHTML += json.name + ": " + json.data + "<br>"
+		}
+
+		sock.onclose = function(e){
+			console.log('closed')
+		}
+
+		btn.onclick = function(){
+					
+			sock.send(JSON.stringify({
+				type: "message",
+				data: ipt.value
+			}))	
+			// sock.send(ipt.value)	
+			oBox.innerHTML += "我：" + ipt.value + "<br>" 
+		}
+	</script>
+</body>
+</html>
